@@ -1,0 +1,62 @@
+{
+Una empresa de logística desea procesar información de los envíos que debe realizar.Para ello dispone de una 
+estructura con información de cada paquete.De cada paquete se conoce:nombre de la localidad del destino y 
+tipo de pauqete a enviar(1:encomienda común;2:encomienda express;3:encomienda frágil;4:certificado).
+Esta estructura se encuentra ordenada por nombre de la localidad del destino y puede existir mas de un envío 
+por localidad.Se solicita calcular e informar:
+La localidad en la cual se debe entregar la mayor cantidad de paquetes.
+La cantidad a enviar de cada tipo de paquete.
+}
+program Hello;
+const max_tipoPaquete=4;
+type
+      cadena30=strig[30];
+      tipoPaquete=1..max_tipoPaquete;
+      paquete=record
+        nomLocalidad:cadena30;
+        tipo:tipoPaquete;
+      end;
+      lista=^nodo;
+      nodo=record
+        dato:paquete;
+        sig:lista;
+      end;
+      vector=array[tipoPaquete]of integer;
+procedure inicializarVector(var v:vector);
+var i:tipoPaquete;
+begin
+  for i:=1 to max_tipoPaquete do 
+    v[i]:=0;
+end;
+procedure procesarLista(L:lista;var v:vector);
+var locActual:cadena30;cantPaquete:integer;
+begin
+  while(L<>nil)do begin
+    locActual:=L^.dato.nomLocalidad;
+    cantPaquete:=0;
+    while(L<>nil)and(locActual=L^.dato.nomLocalidad)do begin    
+      cantPaquete:=cantPaquete+1;
+      v[L^.dato.tipo]:=v[L^.dato.tipo]+1;
+      L:=L^.sig;
+    end;
+    writeln('La cantidad de paquetes que se enviaran a ',locActual,' es ',cantPaquete);
+end;
+function max_tipo(v:vector):tipoPaquete;
+var i,max:tipoPaquete;cant_max:integer;
+begin
+  cant_max:=-1;
+  for i:=1 to max_tipoPaquete do 
+    if(v[i]>cant_max)then begin
+      cant_max:=v[i];
+      max:=i;
+    end;
+  max_tipo:=max;
+end;
+var v:vector;
+    L:lista;
+begin
+  cargarLista(L);//se dispone
+  inicializarVector(v);
+  procesarLista(L,v);
+  writeln('El tipo de paquete que mas se va enviar es:',max_tipo(V));
+end.
