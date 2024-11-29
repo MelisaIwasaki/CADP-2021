@@ -1,0 +1,54 @@
+{
+Una constructora dispone de información sobre los 3500 departamentos construidos.De cada departamento se conoce
+su superficie en metros cuadrados,el monto invertido en dólares y la localidad donde se contruyó.La información
+se encuentra ordenada por localidad.Se pide:
+Generar una lista con todos los departamentos de más de 75m2.
+Informar el monto total invertido por cada localidad.
+}
+program Hello;
+const totalDeptos=3500;
+type
+      cadena20=string[20];
+      rango=1..totalDeptos;
+      depto=record
+        superficie:real;
+        monto:real;
+        localidad:cadena20;
+      end;
+      departamentos=array[rango]of depto;
+      lista=^nodo;
+      nodo=record
+        dato:depto;
+        sig:lista;
+      end;
+procedure agregarDepto(var L:lista;d:depto);
+var nue:lista;
+begin
+  new(nue);
+  nue^.dato:=d;
+  nue^.sig:=L;
+  L:=nue;
+end;
+procedure procesarDepartamentos(v:departamentos;var L:lista);
+var  i:integer;monto:real;locActual:cadena20;
+begin
+  i:=1;
+  while(i<=3500)do begin
+    locActual:=v[i].localidad;
+    monto:=0;
+    while((i<=3500)and(locActual=v[i].localidad))do begin
+      if(v[i].superficie>75)then
+        agregarDepto(L,v[i]);
+      monto:=monto+v[i].monto;
+      i:=i+1;
+    end;
+    writeln('El monto total inertido de la localidad ',locActual,' es de:',monto);
+  end;
+end;
+var  L:lista;
+     v:departamentos;
+begin
+  L:=nil;
+  CargarDepartaentosOrdenados(v);//se dispone
+  procesarDepartamentos(v,L);
+end.
