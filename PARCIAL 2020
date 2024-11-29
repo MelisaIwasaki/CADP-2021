@@ -1,0 +1,106 @@
+{
+Un centro de estética ofrece 12 planes para sus clientes:ozonoterepia,cama solar,spa,depilación,tratamientos 
+antiarrugas,etc.Cada plan posee un código(1..12),un costo y una cantidad de sesiones.Se dispone de una estructura
+con esta información.El centro de estética posee como máximo 90000 clientes.Realizar un programa que lea la 
+información de clientes del centro de estética.De cada cliente se lee:nombre,DNI,ciudad de origen,código de plan
+contratado,y si ya finalizó el tratamiento.La información de los clientes finaliza al ingresar al cliente
+'Mirtha Legrand'con DNI 2320718(que debe procesarse)o al alcanzarse el máximo de clientes.Una vez leída y 
+almacenada la información,procesar los datos para:
+1)Informar la ganancia del centro para cada tipo de plan(incluyendo tratamientos finalizados y no finalizados).
+2)Almacenar en una lista todos los datos de los clientes cuyo tratamientos aún no han finalizados.
+}
+program Hello;
+const
+      maxPlanes=12;
+      maxClientes=90000;
+type  
+      CodPlanes=1..maxPlanes;
+      cadena30=string[30];
+      plan=record
+        costo:real;
+        cantS:integer;
+      end;
+      planes=array[CodPlanes]of plan;
+      cliente=record
+        nomape:cadena30;
+        dni:integer;
+        ciudad:cadena30;
+        codigoP:CodPlanes;
+        finalizado:boolean;
+      end;
+      clientes=array[1..maxClientes]of cliente;
+      ganancias=array[CodPlanes]of real;
+      lista=^nodo;
+      nodo=record
+        dato:cliente;
+        sig:lista;
+      end;
+procedure leerCliente(var c:cliente);
+var aux:string[1];
+begin
+  write('Ingrese S para finalizado,ingrese N para no finalizado:');
+  readln(aux);
+  write('Ingrese el nombre:');
+  readln(c.nomape);
+  write('Ingrese el DNI:');
+  readln(c.dni);
+  write('Ingrese el ciudad:');
+  readln(c.ciudad);
+  write('Ingrese el codigo de plan contratado:');
+  readln(c.codigoP);
+  c.finalizado:=(aux='S');
+end;
+procedure cargarClientes(var vc:clientes;var dimL:integer);
+var c:cliente;
+begin
+  repeat
+    leerCliente(c);
+    dimL:=dimL+1;
+    vc[dimL]:=c;
+  until(c.nomape='Mirtha Legrand')and(c.dni=2320)or(dimL=maxClientes);
+end;
+procedure inicializarVector(var vg:ganancias);
+var i:integer;
+begin
+  for i:=1 to maxPlanes do
+    vg[i]:=0;
+end;
+procedure agregarCliente(c:cliente;var L:lista);
+var nue:lista;
+begin
+  new(nue);
+  nue^.dato:=c;
+  nue^.sig:=L;
+  L:=nue;
+end;
+procedure informarGanancias(vg:ganancias);
+var i:integer;
+begin
+  for i:=1 to maxPlanes do
+    writeln('La ganancia del plan ',i,' es:',vg[i]);
+end;
+procedure procesarClientes(var L:lista; var vg:ganancias;vc:clientes;vp:planes;dimL:integer);
+var i:integer;
+begin
+  inicializarVector(vg);
+  for i:=1 to dimL do begin
+    //if(vc[i].finalizado)then
+      vg[vc[i].codigoP]:=vg[vc[i].codigoP]+vp[vc[i].codigoP].costo;
+      if(vc[i].finalizado )then
+        agregarCliente(vc[i],L);
+  end;
+end;
+var
+     L:lista;
+     vp:planes;
+     vg:ganancias;
+     vc:clientes;
+     dimL:integer;
+begin
+  L:=nil;
+  dimL:=0;
+  cargarPlanes(vp); //se dispone
+  cargarClientes(vc,dimL);
+  procesarClientes(L,vg,vc,vp,dimL);
+  informarGanancias(vg);
+end.
